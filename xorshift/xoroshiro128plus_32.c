@@ -4,22 +4,22 @@
 #include <stdint.h>
 #include <stdio.h>
 
-uint32_t xorshift128plus_32(uint32_t *xyzw) {
+uint32_t xorshift128plus_32(uint32_t *state) {
   uint32_t x, y, z, w, t;
 
-  x = xyzw[0];
-  y = xyzw[1];
-  z = xyzw[2];
-  w = xyzw[3];
+  x = state[0];
+  y = state[1];
+  z = state[2];
+  w = state[3];
 
-  t = x + z;
+  t = y + w + (z != 0 && x >= -z ? 1 : 0);
   z ^= x;
   w ^= y;
 
-  xyzw[0] = ((y << 23) | (x >> 9)) ^ z ^ (z << 14);
-  xyzw[1] = ((x << 23) | (y >> 9)) ^ w ^ ((w << 14) | (z >> 18));
-  xyzw[2] = (w << 4) | (z >> 28);
-  xyzw[3] = (z << 4) | (w >> 28);
+  state[0] = ((y << 23) | (x >> 9)) ^ z ^ (z << 14);
+  state[1] = ((x << 23) | (y >> 9)) ^ w ^ ((w << 14) | (z >> 18));
+  state[2] = (w << 4) | (z >> 28);
+  state[3] = (z << 4) | (w >> 28);
 
   return t;
 }

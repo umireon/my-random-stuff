@@ -12,7 +12,7 @@ uint32_t xorshift128plus(uint64_t *s) {
   s[0] = s0;
   s1 ^= s1 << 23; // a
   s[1] = s1 ^ s0 ^ (s1 >> 18) ^ (s0 >> 5); // b, c
-  return (uint32_t) result;
+  return result >> 32;
 }
 
 uint32_t xorshift128plus_32(uint32_t *s32) {
@@ -22,7 +22,7 @@ uint32_t xorshift128plus_32(uint32_t *s32) {
   const uint32_t s0l = s32[2];
   const uint32_t s0u = s32[3];
 
-  const uint32_t result = s0l + s1l;
+  const uint32_t result = s0u + s1u + (s1l != 0 && s0l >= -s1l ? 1 : 0);
 
   s32[0] = s0l;
   s32[1] = s0u;

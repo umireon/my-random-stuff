@@ -18,7 +18,7 @@ uint32_t xoroshiro128plus(uint64_t *s) {
 	s[0] = rotl(s0, 55) ^ s1 ^ (s1 << 14); // a, b
 	s[1] = rotl(s1, 36); // c
 
-	return result;
+	return result >> 32;
 }
 
 uint32_t xoroshiro128plus_32(uint32_t *s32) {
@@ -28,7 +28,7 @@ uint32_t xoroshiro128plus_32(uint32_t *s32) {
   uint32_t s1l = s32[2];
   uint32_t s1u = s32[3];
 
-  const uint32_t result = s0l + s1l;
+  const uint32_t result = s0u + s1u + (s1l != 0 && s0l >= -s1l ? 1 : 0);
 
   s1l ^= s0l;
   s1u ^= s0u;
