@@ -25,50 +25,19 @@ uint32_t xorshift1024star_32(uint32_t *state) {
   return state[p] * 1419247029;
 }
 
-uint32_t xoroshiro128plus_32(uint32_t *xyzw) {
-  uint32_t x, y, z, w, t;
-
-  x = xyzw[0];
-  y = xyzw[1];
-  z = xyzw[2];
-  w = xyzw[3];
-
-  t = x + z;
-  z ^= x;
-  w ^= y;
-
-  xyzw[0] = ((y << 23) | (x >> 9)) ^ z ^ (z << 14);
-  xyzw[1] = ((x << 23) | (y >> 9)) ^ w ^ ((w << 14) | (z >> 18));
-  xyzw[2] = (w << 4) | (z >> 28);
-  xyzw[3] = (z << 4) | (w >> 28);
-
-  return t;
-}
-
-uint32_t fmix32(uint32_t h) {
-  h ^= h >> 16;
-  h *= 0x85ebca6b;
-  h ^= h >> 13;
-  h *= 0xc2b2ae35;
-  h ^= h >> 16;
-
-  return h;
+uint32_t splitmix32(uint32_t *x) {
+  uint32_t z = (*x += 0x9e3779b9);
+  z = (z ^ (z >> 16)) * 0x85ebca6b;
+  z = (z ^ (z >> 13)) * 0xc2b2ae35;
+  return z ^ (z >> 16);
 }
 
 int main(void) {
-  uint32_t seed[2][4];
-  seed[0][0] = fmix32(1);
-  seed[1][0] = fmix32(2);
-
-  for (int i = 1; i < 4; i++) {
-    seed[0][i] = fmix32(seed[0][i - 1]);
-    seed[1][i] = fmix32(seed[1][i - 1]);
-  }
-
   uint32_t s[2][33];
-  for (int i = 1; i < 32; i++) {
-    s[0][i] = xoroshiro128plus_32(seed[0]);
-    s[1][i] = xoroshiro128plus_32(seed[1]);
+  uint32_t seed[2] = {0, 1};
+  for (int i = 0; i < 32; i++) {
+    s[0][i] = splitmix32(&seed[0]);
+    s[1][i] = splitmix32(&seed[1]);
   }
   s[0][32] = s[1][32] = 0;
 

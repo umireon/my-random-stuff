@@ -24,24 +24,19 @@ uint32_t xorshift128plus_32(uint32_t *xyzw) {
   return t;
 }
 
-uint32_t fmix32 ( uint32_t h ) {
-  h ^= h >> 16;
-  h *= 0x85ebca6b;
-  h ^= h >> 13;
-  h *= 0xc2b2ae35;
-  h ^= h >> 16;
-
-  return h;
+uint32_t splitmix32(uint32_t *x) {
+  uint32_t z = (*x += 0x9e3779b9);
+  z = (z ^ (z >> 16)) * 0x85ebca6b;
+  z = (z ^ (z >> 13)) * 0xc2b2ae35;
+  return z ^ (z >> 16);
 }
 
 int main(void) {
   uint32_t s[2][4];
-  s[0][0] = fmix32(1);
-  s[1][0] = fmix32(2);
-
-  for (int i = 1; i < 4; i++) {
-    s[0][i] = fmix32(s[0][i - 1]);
-    s[1][i] = fmix32(s[1][i - 1]);
+  uint32_t seed[2] = {0, 1};
+  for (int i = 0; i < 4; i++) {
+    s[0][i] = splitmix32(&seed[0]);
+    s[1][i] = splitmix32(&seed[1]);
   }
 
   for (int i = 0; i < 10; i++) {
