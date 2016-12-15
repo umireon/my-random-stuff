@@ -22,7 +22,8 @@ uint32_t xorshift1024star_32(uint32_t *state) {
   state[p] = z ^ x ^ ((z >> 11) | (w << 21)) ^ ((x >> 30) | (y << 2));
   state[p + 1] = w ^ y ^ (w >> 11) ^ (y >> 30);
 
-  return state[p] * 1419247029;
+  x = state[p] & 0xFFFF;
+  return (x * 64949 >> 16) + x * 2312393879 + (state[p] >> 16) * 1419247029 + state[p + 1] * 4256497664;
 }
 
 uint32_t splitmix32(uint32_t *x) {
