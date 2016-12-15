@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <stdio.h>
 
-uint32_t xorshift128plus_32(uint32_t *xyzw) {
+uint32_t xorshift128plus_32(uint32_t *state) {
   uint32_t x, y, z, w, t;
 
   x = xyzw[0];
@@ -21,7 +21,7 @@ uint32_t xorshift128plus_32(uint32_t *xyzw) {
   xyzw[2] = x ^ z ^ ((x >> 18) | (y << 14)) ^ ((z >> 5) | (w << 27));
   xyzw[3] = y ^ w ^ (y >> 18) ^ (w >> 5);
 
-  return t; 
+  return t;
 }
 
 uint32_t fmix32 ( uint32_t h ) {
