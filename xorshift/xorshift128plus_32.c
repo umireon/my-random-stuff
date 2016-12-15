@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <stdio.h>
 
-uint32_t xorshift128plus_32(uint32_t *state) {
+uint32_t xorshift128plus_32(uint32_t *xyzw) {
   uint32_t x, y, z, w, t;
 
   x = xyzw[0];
