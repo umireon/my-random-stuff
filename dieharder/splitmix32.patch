@@ -1,0 +1,98 @@
+Copyright (C) 2016 Kaito Udagawa
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along
+with this program; if not, write to the Free Software Foundation, Inc.,
+51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+diff --git dieharder-3.31.1.orig/include/dieharder/dieharder_rng_types.h dieharder-3.31.1.splitmix32/include/dieharder/dieharder_rng_types.h
+index 52b15a0..e939c66 100644
+--- dieharder-3.31.1.orig/include/dieharder/dieharder_rng_types.h
++++ dieharder-3.31.1.splitmix32/include/dieharder/dieharder_rng_types.h
+@@ -53,6 +53,7 @@
+  GSL_VAR const gsl_rng_type *gsl_rng_kiss;	        /* rgb Jan 2011 */
+  GSL_VAR const gsl_rng_type *gsl_rng_superkiss;	        /* rgb Jan 2011 */
+  GSL_VAR const gsl_rng_type *gsl_rng_XOR;	        /* rgb Jan 2011 */
++ GSL_VAR const gsl_rng_type *gsl_rng_splitmix32;
+ 
+  /*
+   * rng global vectors and variables for setup and tests.
+diff --git dieharder-3.31.1.orig/libdieharder/Makefile.am dieharder-3.31.1.splitmix32/libdieharder/Makefile.am
+index 5fd3396..0665cd1 100644
+--- dieharder-3.31.1.orig/libdieharder/Makefile.am
++++ dieharder-3.31.1.splitmix32/libdieharder/Makefile.am
+@@ -83,6 +83,7 @@ libdieharder_la_SOURCES = \
+ 	rngs_gnu_r.c \
+ 	rng_kiss.c \
+ 	rng_jenkins.c \
++	rng_splitmix32.c \
+ 	rng_superkiss.c \
+ 	rng_stdin_input_raw.c \
+ 	rng_threefish.c \
+diff --git dieharder-3.31.1.orig/libdieharder/dieharder_rng_types.c dieharder-3.31.1.splitmix32/libdieharder/dieharder_rng_types.c
+index 7fb2838..9b8df9b 100644
+--- dieharder-3.31.1.orig/libdieharder/dieharder_rng_types.c
++++ dieharder-3.31.1.splitmix32/libdieharder/dieharder_rng_types.c
+@@ -100,6 +100,8 @@ void dieharder_rng_types()
+  dh_num_dieharder_rngs++;
+  ADD(gsl_rng_superkiss);
+  dh_num_dieharder_rngs++;
++ ADD(gsl_rng_splitmix32);
++ dh_num_dieharder_rngs++;
+  MYDEBUG(D_TYPES){
+    printf("# startup:  Found %u dieharder rngs.\n",dh_num_dieharder_rngs);
+  }
+diff --git dieharder-3.31.1.orig/libdieharder/rng_splitmix32.c dieharder-3.31.1.splitmix32/libdieharder/rng_splitmix32.c
+new file mode 100644
+index 0000000..e7ee4f2
+--- /dev/null
++++ dieharder-3.31.1.splitmix32/libdieharder/rng_splitmix32.c
+@@ -0,0 +1,39 @@
++#include <dieharder/libdieharder.h>
++
++static unsigned long int splitmix32_get (void *vstate);
++static double splitmix32_get_double (void *vstate);
++static void splitmix32_set (void *vstate, unsigned long int s);
++
++typedef unsigned long int splitmix32_state_t;
++
++static unsigned long int splitmix32_get (void *vstate)
++{
++    
++    splitmix32_state_t *x = vstate;
++    uint32_t z = (*x += 0x9e3779b9);
++    z = (z ^ (z >> 16)) * 0x85ebca6b;
++    z = (z ^ (z >> 13)) * 0xc2b2ae35;
++    return z ^ (z >> 16);
++}
++
++static double splitmix32_get_double (void *vstate)
++{
++    return (double) splitmix32_get (vstate) / (double) UINT_MAX;
++}
++
++static void
++splitmix32_set (void *vstate, unsigned long int s)
++{
++    *(splitmix32_state_t *) vstate = s;
++}
++
++static const gsl_rng_type splitmix32_type =
++{"splitmix32",			/* name */
++    UINT_MAX,			/* RAND_MAX */
++    0,				/* RAND_MIN */
++    sizeof (splitmix32_state_t),
++    &splitmix32_set,
++    &splitmix32_get,
++    &splitmix32_get_double};
++
++const gsl_rng_type *gsl_rng_splitmix32 = &splitmix32_type;
