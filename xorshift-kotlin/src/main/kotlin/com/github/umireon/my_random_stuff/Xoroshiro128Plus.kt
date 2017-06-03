@@ -47,7 +47,7 @@ class Xoroshiro128Plus private constructor(
     }
 
     fun split(): Xoroshiro128Plus {
-        val newRandom = Xoroshiro128Plus(state.clone())
+        val newRandom = Xoroshiro128Plus(longArrayOf(*state))
         newRandom.jump()
         return newRandom
     }

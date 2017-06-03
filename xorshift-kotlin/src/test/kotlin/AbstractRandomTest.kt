@@ -1,7 +1,6 @@
 import com.github.umireon.my_random_stuff.*
-import org.junit.Assert.assertArrayEquals
-import org.junit.Assert.assertEquals
 import org.junit.Test
+import kotlin.test.assertEquals
 
 private val zeros = object : AbstractRandom64 {
     override fun next(): Long = 0
@@ -25,17 +24,18 @@ class AbstractRandomTest {
     @Test fun testNextBytes() {
         val buf = ByteArray(9)
         randoms.nextBytes(buf)
-        assertArrayEquals(byteArrayOf(-94, 48, -46, -78, -12, 16, 34, 17, -94), buf)
+        assertEquals(-94, buf[0])
+        assertEquals(-94, buf[8])
     }
 
     @Test fun testNextDouble() {
-        assertEquals(0.0, zeros.nextDouble(), 0.0)
-        assertEquals(1.0 - 1.0 / 9007199254740992.0, ones.nextDouble(), 0.0)
+        assertEquals(0.0, zeros.nextDouble())
+        assertEquals(1.0 - 1.0 / 9007199254740992.0, ones.nextDouble())
     }
 
     @Test fun testNextFloat() {
-        assertEquals(0.0f, zeros.nextFloat(), 0.0f)
-        assertEquals(1.0f - 1.0f / 16777216.0f, ones.nextFloat(), 0.0f)
+        assertEquals(0.0f, zeros.nextFloat())
+        assertEquals(1.0f - 1.0f / 16777216.0f, ones.nextFloat())
     }
 
     @Test fun testNextInt() {

@@ -51,7 +51,7 @@ class Xorshift1024Star private constructor(
     }
 
     fun split(): Xorshift1024Star {
-        val newRandom = Xorshift1024Star(state.clone(), position)
+        val newRandom = Xorshift1024Star(longArrayOf(*state))
         newRandom.jump()
         return newRandom
     }

@@ -43,7 +43,7 @@ class Xorshift128Plus private constructor(
     }
 
     fun split(): Xorshift128Plus {
-        val newRandom = Xorshift128Plus(state.clone())
+        val newRandom = Xorshift128Plus(longArrayOf(*state))
         newRandom.jump()
         return newRandom
     }
