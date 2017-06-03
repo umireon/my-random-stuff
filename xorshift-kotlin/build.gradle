@@ -1,0 +1,31 @@
+group 'com.github.umireon.my-random-stuff'
+version '1.0.0-SNAPSHOT'
+
+buildscript {
+    ext.kotlin_version = '1.1.2-2'
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+//apply plugin: 'kotlin2js'
+apply plugin: 'kotlin'
+
+repositories {
+    mavenCentral()
+}
+
+sourceSets.main.kotlin.srcDirs += "src/main/kotlin"
+
+dependencies {
+//    compile "org.jetbrains.kotlin:kotlin-stdlib-js:$kotlin_version"
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"
+    testCompile 'junit:junit:4.12'
+}
+
+

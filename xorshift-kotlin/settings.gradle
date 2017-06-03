@@ -1,0 +1,2 @@
+include 'js'
+rootProject.name = "kotlin"
